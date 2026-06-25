@@ -1,0 +1,25 @@
+%YAML:1.0
+# Change this field to switch modes:
+#   raw_baseline: raw grayscale SAD + block WTA, no preprocessing/Census/SGM
+#   no_sgm:       CLAHE + Census + block WTA
+#   sgm4:         CLAHE + Census + block WTA + 4-direction SGM
+#   sgm8:         CLAHE + Census + block WTA + 8-direction SGM
+mode: "raw_baseline"
+
+left: "output/rectified/left_rgb_rectified.png"
+right: "output/rectified/right_nir_rectified.png"
+rectification: "output/rectified/rectification.yml"
+gt_depth: "output/rectified/left_depth_rectified.png"
+out: "output/m1"
+
+max_disp: 64
+census_radius: 3
+
+# Use either block_radius or block_diameter. If both are set,
+# block_diameter wins. For example, diameter 41 means radius 20.
+block_radius: 20
+# block_diameter: 41
+
+# Used only by sgm4/sgm8.
+p1: 64
+p2: 512

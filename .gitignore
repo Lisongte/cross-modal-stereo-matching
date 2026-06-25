@@ -1,0 +1,7 @@
+build/
+output/
+dataset_testing/
+data/
+.DS_Store
+*.zip
+*.tmp
