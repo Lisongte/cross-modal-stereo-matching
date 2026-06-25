@@ -1,0 +1,57 @@
+data:
+  root: "/public/home/ac4jdx0nwm/train_data"
+  val_root: "/public/home/ac4jdx0nwm/train_data"
+  train_ratio: 0.8
+  input_height: 384
+  input_width: 640
+  # 全量训练：使用全部 5,810 样本
+  max_train_samples: null
+  max_val_samples: null
+  num_workers: 2                  # 限制并发数，配合 OPENBLAS_NUM_THREADS=1
+
+camera:
+  fx: 764.5138705813054
+  fy: 764.5138705813054
+  cx: 579.5470123291016
+  cy: 153.00541305541992
+  baseline_m: 0.05025276169
+  max_disparity: 48
+  num_candidates: 48
+  output_mode: "disparity"
+
+model:
+  type: "stereo"
+  feature_channels: 32
+  use_lightweight:  true
+  use_mdp: true                   # 全量训练启用 MDP，监督深度不确定性
+
+train:
+  batch_size: 4                   # RTX 4090/25GB 实测仅用 3GB，安全
+  epochs: 50                      # 全量 50 epoch（500样本 10 epoch 仍在下降）
+  learning_rate: 0.0003
+  lr_scheduler: "cycle"
+  optimizer: "AdamW"
+  weight_decay: 0.00001
+  cycle_max_lr: 0.001
+  cycle_pct_start: 0.3            # 30% warmup（~350 batch），足够逃离随机初始化
+  step_size: 10
+  step_gamma: 0.5
+  resume_from: null
+  val_interval: 1
+  save_interval: 10               # 每 10 epoch 保存一次检查点
+  grad_accumulation_steps: 1
+
+loss:
+  smoothl1_weight: 1.0
+  edge_smooth_weight: 0.0
+  nll_weight: 0.05
+  nll_mdp_weight: 0.05            # MDP NLL 损失初始权重（L1 主导，MDP 为辅）
+
+output:
+  exp_name: "rgbnir_stereo_full_50ep"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+  vis_dir: "visualizations"
+  print_freq: 100                 # 全量 1162 batch/epoch，每 100 batch 打印
+  vis_freq: 500                   # 每 500 step 保存可视化
+  infer_num_samples: 8            # 训练结束后 8 张推理样本
